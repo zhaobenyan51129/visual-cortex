@@ -9,6 +9,8 @@ int sample_2D_Gaussian(Float nsig, int n, Float wv, Float x[], Float y[], Float 
     //
     //PyRun_SimpleString("import sys");
     //PyRun_SimpleString("sys.path.insert(0, \"/home/wd/repos/patchV1/src/util\")");
+    PyRun_SimpleString("import sys");
+    PyRun_SimpleString("sys.path.insert(0, \"/home/zhaobenyan/model/repos/patchV1/src/util/\")");
     PyObject *pName = PyUnicode_FromString("sampler");
     PyObject *pModule = PyImport_Import(pName);
     Py_DECREF(pName);

@@ -160,6 +160,7 @@ def read_conStats(fn, prec='f4'):
 
 def linear_diff(v0, vs):
     return v0-vs
+
 def circular_diff(v0, vs, minv, maxv):
     v_diff = v0 - vs
     v_range = maxv - minv

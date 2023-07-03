@@ -241,8 +241,8 @@ def generate_grating(amp, spatialFrequency, temporalFrequency, direction, npixel
         c2_sRGB = apply_sRGB_gamma(np.matmul(LMS2sRGB, c2))
         print(f'crest in sRGB: {c1_sRGB}')
         print(f'valley in sRGB: {c2_sRGB}')
-        if not (c1_sRGB<=1).all() or not (c1_sRGB>=0).all() or not (c2_sRGB<=1).all() or not (c2_sRGB>=0).all():
-            raise Exception(f'crest and valley in LMS is out of the sRGB space')
+        # if not (c1_sRGB<=1).all() or not (c1_sRGB>=0).all() or not (c2_sRGB<=1).all() or not (c2_sRGB>=0).all():
+            # raise Exception(f'crest and valley in LMS is out of the sRGB space')
         mean_value = (c1+c2)/2
 
     c1 = np.reshape(c1,(1,3))

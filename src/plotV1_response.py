@@ -2312,11 +2312,11 @@ def plotV1_response(output_suffix0, res_suffix, conLGN_suffix, conV1_suffix, res
         fign = 'exc_LGN-SF-corr'
         OPpick = epick[dOP[epick] <= dOri*nOri/2]
         BGpick = epick[dOP[epick] > dOri*nOri/2]
-        plot_LGN_SF_corr(fign, OPpick, BGpick)
+        # plot_LGN_SF_corr(fign, OPpick, BGpick)
         fign = 'inh_LGN-SF-corr'
         OPpick = ipick[dOP[ipick] <= dOri*nOri/2]
         BGpick = ipick[dOP[ipick] > dOri*nOri/2]
-        plot_LGN_SF_corr(fign, OPpick, BGpick)
+        # plot_LGN_SF_corr(fign, OPpick, BGpick)
         
     if plotLR_rp and OPstatus != 2:
         fig = plt.figure(f'LRrpStat', dpi = 600)

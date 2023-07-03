@@ -4,8 +4,8 @@
 # In[1]:
 
 
-get_ipython().run_line_magic('load_ext', 'autoreload')
-get_ipython().run_line_magic('autoreload', '2')
+
+
 #%matplotlib notebook
 # produce V1_allpos, V1_feature, V1_RF
 
@@ -21,7 +21,7 @@ from scipy.stats import qmc
 from patch_square import *
 #fdr = 'D:/scratch/patchV1/resource/'
 #fdr = 'C:/Users/gueux/Repos/patchV1/Data/'
-fdr = '/root/autodl-tmp/public/resource/'
+fdr = '/home/zhaobenyan/model/resource/'
 seed = 6532787
 rng = np.random.default_rng(seed = seed)
 
@@ -296,8 +296,9 @@ with open(feature_filename, 'wb') as f:
 neye = 1
 #ratio = 0.75  # 25% interneuron, but Clark 41' Nissl stained the neurons, states only one morphological population is found
 ratio = 3
-LGN_RF_ratio = 0.125 # 11.55 cones wide for foveal V1 RF, 5 cones for LGN
-dow_RFsize_ecc = lambda E:13.32*E + 0.0116  # Dow et. al., 1981
+LGN_RF_ratio = 0.125 # 11.55 cones wide for foveal V1 RF, 5 cones for LGN 0.125
+# dow_RFsize_ecc = lambda E:13.32*E + 0.0116  # Dow et. al., 1981
+dow_RFsize_ecc = lambda E:13.32*E + 0.037  # Dow et. al., 1981
 LGN_RF_extent = 0.5*dow_RFsize_ecc(ecc*60)/60 * np.sqrt(LGN_RF_ratio)
 LGN_ecc = ecc + LGN_RF_extent
 # Malpeli et al 1996
@@ -570,7 +571,8 @@ fp = 'f4'
 with open(LGN_vpos_file, 'wb') as f:
     #       #type,  # ipsi-     | # contra-
     np.array([nparvo, 0], dtype = 'u4').tofile(f)
-    np.array([ecc], dtype = fp).tofile(f)
+    # np.array([ecc], dtype = fp).tofile(f)
+    np.array([LGN_ecc], dtype = fp).tofile(f)
     # cart
     #         xmin, xmax, ymin, ymax
     np.array([-LGN_ecc, 2*LGN_ecc, -LGN_ecc, 2*LGN_ecc], dtype = fp).tofile(f)

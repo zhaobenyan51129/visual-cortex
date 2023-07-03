@@ -1,6 +1,8 @@
 #!/bin/bash
 # plotTConly, fitDataReady/plotOnly, readNewSpike
 set -e
+
+
 repo=/home/zhaobenyan/model/repos/patchV1 
 cfg_fdr=/home/zhaobenyan/model/repos/patchV1/src
 fdr0=/home/zhaobenyan/model
@@ -10,14 +12,13 @@ data_fdr=/home/zhaobenyan/model/patchfast
 log_dir=/home/zhaobenyan/model/data_save/log
 
 fitTC=False
-plotdw=True
-plotTC=True 
 nOri=6 # total # orientaton if applicable
 TF=8 # input frequency if applicable
-SF=36 
+SF=36
 trial_suffix=merge_test
-singleOri=False 
-one_ori=0 
+singleOri=True
+# singleOri=False
+one_ori=1
 
 res_suffix=minimal-patch
 patch=patch_fast
@@ -26,9 +27,6 @@ generate_V1_connection=False
 generate_LGN_V1_connection=False
 
 patch_cfg=minimal.cfg
-for i in {1..6}; do
-  eval "patch_cfg$i=minimal$i.cfg"
-done
 
 LGN_V1_suffix=test_lgn
 V1_connectome_suffix=test_v1
@@ -115,11 +113,9 @@ fi
 echo configuration files copied
 
 cp ${repo}/src/plotV1_response.py ${fig_fdr}/plotV1_response_${trial_suffix}.py
-cp ${repo}/src/plotV1_response.py ${fig_fdr}/plotV1_response.py
 cp ${repo}/src/plotLGN_response.py ${fig_fdr}/plotLGN_response_${trial_suffix}.py
 cp ${repo}/src/plotFrameOutput.py ${fig_fdr}/plotFrameOutput_${trial_suffix}.py
 cp ${repo}/src/readPatchOutput.py ${fig_fdr}/readPatchOutput.py
-cp ${repo}/img_proc.py ${fig_fdr}/img_proc.py
 if [ "$singleOri" = False ]; then
 	cp ${repo}/src/getTuningCurve.py ${fig_fdr}/getTuningCurve_${trial_suffix}.py
 else
@@ -149,47 +145,47 @@ export readNewSpike
 export generate_V1_connection
 export singleOri
 export plotOnly
-export plotdw
-export plotTC
 
 date=$(eval date +"%Y_%m_%d_%H-%M-%S")
 
-# if [ "$plotTConly" = False ]; then
-if [ "$singleOri" = False ]; then
-	if [ "$plotOnly" = False ]; then
-		cp ${cfg_fdr}/${patch_cfg1} ${fig_fdr}/${trial_suffix}-ori_1.cfg
-		# cp ${cfg_fdr}/${patch_cfg2} ${fig_fdr}/${trial_suffix}-ori_2.cfg
-	fi
-
-	jobID=""
-	for ori in $( seq 1 $nOri )
-	do
-		export ori
-		./ori.sh > ${log_dir}/pOri_${date}_${trial_suffix}_${ori}_${plotOnly}.out 2>&1 &
-		jobID+="${!} "
-					#sleep 1
+if [ "$plotTConly" = False ]; then
+	if [ "$singleOri" = False ]; then
 		if [ "$plotOnly" = False ]; then
-			if [ "${ori}" -le "${nOri}" ]; then
-				cfg_var="patch_cfg${ori}"
-				cp "${cfg_fdr}/${!cfg_var}" "${fig_fdr}/${trial_suffix}-ori_${ori}.cfg"
-			fi
+			cp ${cfg_fdr}/${patch_cfg} ${fig_fdr}/${trial_suffix}-ori_1.cfg
+			cp ${fig_fdr}/${trial_suffix}-ori_1.cfg ${fig_fdr}/${trial_suffix}-ori_2.cfg
 		fi
-	done
-	#wait $jobID && ./plotTC.sh > log/pTC_${date}_${trial_suffix}.out &
-	job=$!
-else
-	ori=$one_ori
-	if [ "$plotOnly" = False ]; then
-		cp ${cfg_fdr}/${patch_cfg} ${fig_fdr}/${trial_suffix}-ori_${ori}.cfg
+
+		jobID=""
+		for ori in $( seq 1 $nOri )
+		do
+			export ori
+			./ori.sh > ${log_dir}/pOri_${date}_${trial_suffix}_${ori}_${plotOnly}.out 2>&1 &
+			jobID+="${!} "
+            #sleep 1
+			if [ "$plotOnly" = False ]; then
+				if [ "${ori}" -lt "${nOri}" ]; then
+					vim -s ${cfg_fdr}/nextOri_cfg.keys ${ fig_fdr}/${trial_suffix}-ori_$((ori+1)).cfg
+					if [ "$((ori+1))" -lt "${nOri}" ]; then
+						cp ${fig_fdr}/${trial_suffix}-ori_$((ori+1)).cfg ${fig_fdr}/${trial_suffix}-ori_$((ori+2)).cfg
+					fi
+				fi
+			fi
+		done
+		#wait $jobID && ./plotTC.sh > log/pTC_${date}_${trial_suffix}.out &
+		job=$!
+	else
+		ori=$one_ori
+		if [ "$plotOnly" = False ]; then
+			cp ${cfg_fdr}/${patch_cfg} ${fig_fdr}/${trial_suffix}-ori_${ori}.cfg
+		fi
+		export ori
+		./ori.sh > ${log_dir}/pSingle_${date}_${trial_suffix}_${ori}_${plotOnly}.out 2>&1 &
+		job=$!
 	fi
-	export ori
-	./ori.sh > ${log_dir}/pSingle_${date}_${trial_suffix}_${ori}_${plotOnly}.out 2>&1 &
+else
+	./plotTC.sh > ${log_dir}/pTC_${date}_${trial_suffix}.out 2>&1 &
 	job=$!
 fi
-# else
-# 	./plotTC.sh > ${log_dir}/pTC_${date}_${trial_suffix}.out 2>&1 &
-# 	job=$!
-# fi
 
 wait $job
 #(wait $job && shutdown) &
